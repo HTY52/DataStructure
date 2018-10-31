@@ -30,15 +30,13 @@ void Add(Matrix add1, Matrix add2, Matrix &sum) {
 				k++;
 				l++;
 				m++; 
-			}
-			else if(add1.data[k].r == i+1 && add1.data[k].c == j+1) {
+			}else if(add1.data[k].r == i+1 && add1.data[k].c == j+1) {
 				sum.data[m].r = i+1;
 				sum.data[m].c = j+1;
 				sum.data[m].elem = add1.data[k].elem;
 				k++;
 				m++;
-			}
-			else if(add2.data[l].r == i+1 && add2.data[l].c == j+1) {
+			}else if(add2.data[l].r == i+1 && add2.data[l].c == j+1) {
 				sum.data[m].r = i+1;
 				sum.data[m].c = j+1;
 				sum.data[m].elem = add2.data[k].elem;
@@ -47,7 +45,6 @@ void Add(Matrix add1, Matrix add2, Matrix &sum) {
 			}
 		}
 	}
-	
 	sum.cols = add2.cols;
 	sum.rows = add2.rows;
 	sum.nums = m; 
@@ -67,15 +64,13 @@ void Sub(Matrix sub1, Matrix sub2, Matrix &result) {
 				k++;
 				l++;
 				m++; 
-			}
-			else if(sub1.data[k].r == i+1 && sub1.data[k].c == j+1) {
+			}else if(sub1.data[k].r == i+1 && sub1.data[k].c == j+1) {
 				result.data[m].r = i+1;
 				result.data[m].c = j+1;
 				result.data[m].elem = sub1.data[k].elem;
 				k++;
 				m++;
-			}
-			else if(sub2.data[l].r == i+1 && sub2.data[l].c == j+1) {
+			}else if(sub2.data[l].r == i+1 && sub2.data[l].c == j+1) {
 				result.data[m].r = i+1;
 				result.data[m].c = j+1;
 				result.data[m].elem = -1 * sub2.data[k].elem;
@@ -102,41 +97,87 @@ void Transposed(Matrix matrix) {
 	}
 }
 
+void Multi(Matrix multi1, Matrix multi2, Matrix &sigma) {
+	/* TODO (SunspotsInys#1#): 两稀疏矩阵相乘 */
+}
+
 int main() {
 	
 	Matrix a, b, c;
 	char ch;
+	int temp;
+	int k;
 	
 	printf("请输入你想要进行的运算('+'表示矩阵加法、'-'表示矩阵减法、'*'表示矩阵乘法、'#'表示矩阵转置)：");
 	scanf("%c", &ch);
-	
-	int r1, c1, r2, c2;
-	printf("请输入待运算的稀疏矩阵的行数和列数：\n");
-	printf("\t请输入的第一个稀疏矩阵的行数和列数：\n");
-	printf("\t\t行数：");
-	scanf("%d", &r1);
-	printf("\t\t列数：");
-	scanf("%d", &c1);
-
-	printf("\t请输入的第二个稀疏矩阵的行数和列数：\n");
-	printf("\t\t行数：");
-	scanf("%d", &r2);
-	printf("\t\t列数：");
-	scanf("%d", &c2);
-	printf("请输入你想要进行的运算('+'表示矩阵加法、'-'表示矩阵减法、'*'表示矩阵乘法、'#'表示矩阵转置)：\n");
-	switch(ch) {
-		case '+':
-			if(r1 != r2 && c1 != c2) {
-				printf("警告：行数列数不匹配，程序运行结束！\n");
+		
+	printf("请输入待运算的稀疏矩阵的行数和列数及非零元个数：\n");
+	printf("\t行数：");
+	scanf("%d", &a.rows);
+	printf("\t列数：");
+	scanf("%d", &a.cols);
+	do {
+		printf("\t\t非零元个数(小于100的正整数)：");
+		scanf("%d", &a.nums);
+	}while(a.nums > MaxSize && a.nums <= 0);
+	k = 0;
+	for(int i = 0; i < a.rows; i++) {
+		for(int j = 0; i < a.cols; i++) {
+			scanf("%d", &temp);
+			if(temp) {
+				a.data[k].r = i+1;
+				a.data[k].c = j+1;
+				a.data[k].elem = temp;
+				k++;
+			}
+		}
+	}
+		
+	if(ch != '#') {
+		printf("请输入的第二个稀疏矩阵的行数和列数：\n");
+		printf("\t行数：");
+		scanf("%d", &b.rows);
+		printf("\t列数：");
+		scanf("%d", &b.cols);
+		if(ch == '*') {
+			if(a.cols != b.rows) {
+				printf("忠告：建议出门左转学习一下线性代数，你输入的两个矩阵无法相乘！\n"); 
+				printf("拜了个拜，强行停止程序运行，告辞，不送！\n");
 				return 0;
 			}
-			break;
-		case '-':
-			break;
-		case '*':
-			break;
-		case '#':
-			break;
+		}else {
+			if(a.rows != b.rows || a.cols != b.cols) {
+				printf("忠告：建议出门左转学习一下线性代数，你输入的两个矩阵无法相加减！\n");
+				printf("\t拜了个拜，强行停止程序运行，告辞，不送！\n");
+				return 0;
+			}
+		}
+		do {
+			printf("\t\t非零元个数(小于100的正整数)：");
+			scanf("%d", &b.nums);
+		}while(b.nums > MaxSize && b.nums <= 0);
+		k = 0;
+		for(int i = 0; i < b.rows; i++) {
+			for(int j = 0; i < b.cols; i++) {
+				scanf("%d", &temp);
+				if(temp) {
+					b.data[k].r = i+1;
+					b.data[k].c = j+1;
+					b.data[k].elem = temp;
+					k++;
+				}
+			}
+		}
+	}
+		
+	if(ch == '+') {
+		Add(a, b, c);
+	}else if(ch == '-'){
+		Sub(a, b, c);
+	}else if(ch == '#') {
+		Transposed(a);
+	}else if(ch == '*') {
+		Multi(a, b, c);
 	}
 	
 	return 0;
