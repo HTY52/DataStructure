@@ -85,9 +85,30 @@ void Sub(Matrix sub1, Matrix sub2, Matrix &result) {
 	result.nums = m; 
 }
 
-void Transposed(Matrix matrix1, Matrix &matrix2) {
-	 /* TODO (SunspotsInys#1#): 稀疏矩阵转置，原方法产生的转置矩阵导致
-	                           按列存储，需另想办法 */
+void Swap(int &a, int &b) {
+	int t = a;
+	a = b;
+	b = t;
+}
+
+void Transposed(Matrix &matrix1) {
+	 for (int i = 0; i < matrix1.nums; i++) {
+	 	Swap(matrix1.data[i].c, matrix1.data[i].r);
+	 }
+	 Swap(matrix1.rows, matrix1.cols);
+	 for (int i = 0; i < matrix1.nums; i++) {
+	 	TupNode temp = {matrix1.data[i].r, matrix1.data[i].c};
+	 	for (int j = i; j <matrix1.nums; j++) {
+	 		if(matrix1.data[j].r < temp.r && matrix1.data[j].c < temp.c) {
+	 			temp.r = matrix1.data[j].r;
+	 			temp.c = matrix1.data[j].c;
+	 			temp.elem = j;
+	 		}
+	 	}
+	 	Swap(matrix1.data[i].c, matrix1.data[temp.elem].c);
+	 	Swap(matrix1.data[i].r, matrix1.data[temp.elem].r);
+	 	Swap(matrix1.data[i].elem, matrix1.data[temp.elem].elem);
+	 }
 }
 
 void Multi(Matrix multi1, Matrix multi2, Matrix &sigma) {
@@ -108,7 +129,7 @@ void PrintMatrix(Matrix matrix) {
 	int k = 0;
 	for(int i = 0; i < matrix.rows; i++, printf("\n")) {
 		for(int j = 0; j < matrix.cols; j++) {
-			if(i+1 == matrix.data[k].r && c == matrix.data[k].c) {
+			if(i+1 == matrix.data[k].r && j+1 == matrix.data[k].c) {
 				printf("%d ", matrix.data[k++].elem);
 			}else {
 				printf("0 ");
@@ -119,6 +140,9 @@ void PrintMatrix(Matrix matrix) {
 
 
 int main() {
+	
+	//freopen("input.in", "r", stdin);
+	//freopen("output.out", "w", stdout);
 	
 	Matrix a, b, c;
 	char ch;
@@ -137,6 +161,7 @@ int main() {
 		printf("\t非零元个数(小于100的正整数)：");
 		scanf("%d", &a.nums);
 	}while(a.nums > MaxSize && a.nums <= 0);
+	printf("请输入矩阵：\n");
 	k = 0;
 	for(int i = 0; i < a.rows; i++) {
 		for(int j = 0; j < a.cols; j++) {
@@ -170,9 +195,10 @@ int main() {
 			}
 		}
 		do {
-			printf("\t\t非零元个数(小于100的正整数)：");
+			printf("\t非零元个数(小于100的正整数)：");
 			scanf("%d", &b.nums);
 		}while(b.nums > MaxSize && b.nums <= 0);
+		printf("请输入矩阵：\n");
 		k = 0;
 		for(int i = 0; i < b.rows; i++) {
 			for(int j = 0; j < b.cols; j++) {
@@ -190,7 +216,7 @@ int main() {
 	if(ch == '+') {
 		Add(a, b, c);
 		PrintTup(c);
-		PrintMatrix(c)
+		PrintMatrix(c);
 	}else if(ch == '-'){
 		Sub(a, b, c);
 		PrintTup(c);
