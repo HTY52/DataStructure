@@ -1,18 +1,18 @@
 #include <stdio.h>
 
 #define N 20//建议程序处理的矩阵行数列数均不超过20
-#define MaxSize 100//建议程序处理的稀疏矩阵的非零元个数不超过100 
+#define MaxSize 100//建议程序处理的稀疏矩阵的非零元个数不超过100
 
 typedef struct {
-	int r;//元素行号 
-	int c;//元素列号 
-	int elem;//元素值 
+	int r;//元素行号
+	int c;//元素列号
+	int elem;//元素值
 }TupNode;
 
 typedef struct {
-	int rows;//该矩阵行数 
-	int cols;//该矩阵列数 
-	int nums;//该矩阵非零元个数 
+	int rows;//该矩阵行数
+	int cols;//该矩阵列数
+	int nums;//该矩阵非零元个数
 	TupNode data[MaxSize];
 }Matrix;
 
@@ -20,7 +20,7 @@ void Add(Matrix add1, Matrix add2, Matrix &sum) {
 	int k = 0;
 	int l = 0;
 	int m = 0;
-	
+
 	for(int i = 0; i < add1.rows; i++) {
 		for(int j = 0; j < add1.cols; j++) {
 			if(add1.data[k].r == i+1 && add1.data[k].c == j+1 && add2.data[l].r == i+1 && add2.data[l].c == j+1) {
@@ -29,7 +29,7 @@ void Add(Matrix add1, Matrix add2, Matrix &sum) {
 				sum.data[m].elem = add1.data[k].elem + add2.data[l].elem;
 				k++;
 				l++;
-				m++; 
+				m++;
 			}else if(add1.data[k].r == i+1 && add1.data[k].c == j+1) {
 				sum.data[m].r = i+1;
 				sum.data[m].c = j+1;
@@ -47,14 +47,14 @@ void Add(Matrix add1, Matrix add2, Matrix &sum) {
 	}
 	sum.cols = add2.cols;
 	sum.rows = add2.rows;
-	sum.nums = m; 
+	sum.nums = m;
 }
 
 void Sub(Matrix sub1, Matrix sub2, Matrix &result) {
 	int k = 0;
 	int l = 0;
 	int m = 0;
-	
+
 	for(int i = 0; i < sub1.rows; i++) {
 		for(int j = 0; j < sub1.cols; j++) {
 			if(sub1.data[k].r == i+1 && sub1.data[k].c == j+1 && sub2.data[l].r == i+1 && sub2.data[l].c == j+1) {
@@ -63,7 +63,7 @@ void Sub(Matrix sub1, Matrix sub2, Matrix &result) {
 				result.data[m].elem = sub1.data[k].elem - sub2.data[l].elem;
 				k++;
 				l++;
-				m++; 
+				m++;
 			}else if(sub1.data[k].r == i+1 && sub1.data[k].c == j+1) {
 				result.data[m].r = i+1;
 				result.data[m].c = j+1;
@@ -79,10 +79,10 @@ void Sub(Matrix sub1, Matrix sub2, Matrix &result) {
 			}
 		}
 	}
-	
+
 	result.cols = sub2.cols;
 	result.rows = sub2.rows;
-	result.nums = m; 
+	result.nums = m;
 }
 
 void Swap(int &a, int &b) {
@@ -91,28 +91,57 @@ void Swap(int &a, int &b) {
 	b = t;
 }
 
-void Transposed(Matrix &matrix1) {
-	 for (int i = 0; i < matrix1.nums; i++) {
-	 	Swap(matrix1.data[i].c, matrix1.data[i].r);
-	 }
-	 Swap(matrix1.rows, matrix1.cols);
-	 for (int i = 0; i < matrix1.nums; i++) {
-	 	TupNode temp = {matrix1.data[i].r, matrix1.data[i].c};
-	 	for (int j = i; j <matrix1.nums; j++) {
-	 		if(matrix1.data[j].r < temp.r && matrix1.data[j].c < temp.c) {
-	 			temp.r = matrix1.data[j].r;
-	 			temp.c = matrix1.data[j].c;
-	 			temp.elem = j;
-	 		}
-	 	}
-	 	Swap(matrix1.data[i].c, matrix1.data[temp.elem].c);
-	 	Swap(matrix1.data[i].r, matrix1.data[temp.elem].r);
-	 	Swap(matrix1.data[i].elem, matrix1.data[temp.elem].elem);
-	 }
+void Transposed(Matrix matrix1, Matrix &matrix2) {
+    int p, q = 0, v;
+    matrix2.rows = matrix1.cols;
+    matrix2.cols = matrix1.rows;
+    matrix2.nums = matrix1.nums;
+    if (matrix1.nums) {
+        for (v = 0; v < matrix1.cols; ++v) {
+            for (p = 0; p < matrix1.nums; ++p) {
+                if (matrix1.data[p].c == v) {
+                    matrix2.data[q].r = matrix1.data[p].c;
+                    matrix2.data[q].c = matrix1.data[p].r;
+                    matrix2.data[q].elem = matrix1.data[p].elem;
+                    ++q;
+                }
+            }
+        }
+    }
+}
+
+int GetValue(Matrix matrix, int i, int j) {
+    int k = 0;
+    while (k < matrix.nums && (matrix.data[k].r != i || matrix.data[k].c != j)) {
+        ++k;
+    }
+    if (k < matrix.nums) {
+        return matrix.data[k].elem;
+    } else {
+        return 0;
+    }
 }
 
 void Multi(Matrix multi1, Matrix multi2, Matrix &sigma) {
-	/* TODO (SunspotsInys#1#): 两稀疏矩阵相乘 */
+	int i, j, k, p = 0;
+    int s;
+    for (i = 0; i < multi1.rows; ++i) {
+        for (j = 0; j < multi2.cols; ++j) {
+            s = 0;
+            for (k = 0; k < multi1.cols; ++k) {
+                s += GetValue(multi1, i, k) * GetValue(multi2, k, j);
+            }
+            if (s) {
+                sigma.data[p].r = i;
+                sigma.data[p].c = j;
+                sigma.data[p].elem = s;
+                ++p;
+            }
+        }
+    }
+    sigma.rows = multi1.rows;
+    sigma.cols = multi2.cols;
+    sigma.nums = p;
 }
 
 void PrintTup(Matrix matrix) {
@@ -140,18 +169,18 @@ void PrintMatrix(Matrix matrix) {
 
 
 int main() {
-	
+
 	//freopen("input.in", "r", stdin);
 	//freopen("output.out", "w", stdout);
-	
+
 	Matrix a, b, c;
 	char ch;
 	int temp;
 	int k;
-	
+
 	printf("请输入你想要进行的运算('+'表示矩阵加法、'-'表示矩阵减法、'*'表示矩阵乘法、'#'表示矩阵转置)：");
 	scanf("%c", &ch);
-	
+
 	printf("请输入待运算的稀疏矩阵的行数和列数及非零元个数：\n");
 	printf("\t行数：");
 	scanf("%d", &a.rows);
@@ -174,7 +203,7 @@ int main() {
 			}
 		}
 	}
-		
+
 	if(ch != '#') {
 		printf("请输入的第二个稀疏矩阵的行数和列数：\n");
 		printf("\t行数：");
@@ -212,7 +241,7 @@ int main() {
 			}
 		}
 	}
-		
+
 	if(ch == '+') {
 		Add(a, b, c);
 		PrintTup(c);
@@ -222,14 +251,14 @@ int main() {
 		PrintTup(c);
 		PrintMatrix(c);
 	}else if(ch == '#') {
-		Transposed(a);
-		PrintTup(a);
-		PrintMatrix(a);
+		Transposed(a, c);
+		PrintTup(c);
+		PrintMatrix(c);
 	}else if(ch == '*') {
 		Multi(a, b, c);
 		PrintTup(c);
 		PrintMatrix(c);
 	}
-	
+
 	return 0;
 }
