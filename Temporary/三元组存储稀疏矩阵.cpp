@@ -39,7 +39,7 @@ void Add(Matrix add1, Matrix add2, Matrix &sum) {
 			}else if(add2.data[l].r == i+1 && add2.data[l].c == j+1) {
 				sum.data[m].r = i+1;
 				sum.data[m].c = j+1;
-				sum.data[m].elem = add2.data[k].elem;
+				sum.data[m].elem = add2.data[l].elem;
 				l++;
 				m++;
 			}
@@ -63,7 +63,9 @@ void Sub(Matrix sub1, Matrix sub2, Matrix &result) {
 				result.data[m].elem = sub1.data[k].elem - sub2.data[l].elem;
 				k++;
 				l++;
-				m++;
+				if(result.data[m].elem) {
+					m++;
+				}
 			}else if(sub1.data[k].r == i+1 && sub1.data[k].c == j+1) {
 				result.data[m].r = i+1;
 				result.data[m].c = j+1;
@@ -73,7 +75,7 @@ void Sub(Matrix sub1, Matrix sub2, Matrix &result) {
 			}else if(sub2.data[l].r == i+1 && sub2.data[l].c == j+1) {
 				result.data[m].r = i+1;
 				result.data[m].c = j+1;
-				result.data[m].elem = -1 * sub2.data[k].elem;
+				result.data[m].elem = -1 * sub2.data[l].elem;
 				l++;
 				m++;
 			}
@@ -92,17 +94,17 @@ void Swap(int &a, int &b) {
 }
 
 void Transposed(Matrix matrix1, Matrix &matrix2) {
-    int p, q = 0, v;
+    int q = 0;
     matrix2.rows = matrix1.cols;
     matrix2.cols = matrix1.rows;
     matrix2.nums = matrix1.nums;
     if (matrix1.nums) {
-        for (v = 0; v < matrix1.cols; ++v) {
-            for (p = 0; p < matrix1.nums; ++p) {
-                if (matrix1.data[p].c == v) {
-                    matrix2.data[q].r = matrix1.data[p].c;
-                    matrix2.data[q].c = matrix1.data[p].r;
-                    matrix2.data[q].elem = matrix1.data[p].elem;
+        for (int i = 0; i < matrix1.cols; ++i) {
+            for (int j = 0; j < matrix1.nums; ++j) {
+                if (matrix1.data[j].c == i + 1) {
+                    matrix2.data[q].r = matrix1.data[j].c;
+                    matrix2.data[q].c = matrix1.data[j].r;
+                    matrix2.data[q].elem = matrix1.data[j].elem;
                     ++q;
                 }
             }
@@ -123,17 +125,17 @@ int GetValue(Matrix matrix, int i, int j) {
 }
 
 void Multi(Matrix multi1, Matrix multi2, Matrix &sigma) {
-	int i, j, k, p = 0;
+	int p = 0;
     int s;
-    for (i = 0; i < multi1.rows; ++i) {
-        for (j = 0; j < multi2.cols; ++j) {
+    for (int i = 0; i < multi1.rows; ++i) {
+        for (int j = 0; j < multi2.cols; ++j) {
             s = 0;
-            for (k = 0; k < multi1.cols; ++k) {
-                s += GetValue(multi1, i, k) * GetValue(multi2, k, j);
+            for (int k = 0; k < multi1.cols; ++k) {
+                s += GetValue(multi1, i + 1, k + 1) * GetValue(multi2, k + 1, j + 1);
             }
             if (s) {
-                sigma.data[p].r = i;
-                sigma.data[p].c = j;
+                sigma.data[p].r = i + 1;
+                sigma.data[p].c = j + 1;
                 sigma.data[p].elem = s;
                 ++p;
             }
@@ -154,7 +156,7 @@ void PrintTup(Matrix matrix) {
 }
 
 void PrintMatrix(Matrix matrix) {
-	printf("打印原矩阵：\n");
+	printf("打印矩阵：\n");
 	int k = 0;
 	for(int i = 0; i < matrix.rows; i++, printf("\n")) {
 		for(int j = 0; j < matrix.cols; j++) {
@@ -203,7 +205,6 @@ int main() {
 			}
 		}
 	}
-
 	if(ch != '#') {
 		printf("请输入的第二个稀疏矩阵的行数和列数：\n");
 		printf("\t行数：");
@@ -212,7 +213,7 @@ int main() {
 		scanf("%d", &b.cols);
 		if(ch == '*') {
 			if(a.cols != b.rows) {
-				printf("忠告：建议出门左转学习一下线性代数，你输入的两个矩阵无法相乘！\n"); 
+				printf("忠告：建议出门左转学习一下线性代数，你输入的两个矩阵无法相乘！\n");
 				printf("拜了个拜，强行停止程序运行。出门右转，告辞，不送！\n");
 				return 0;
 			}
